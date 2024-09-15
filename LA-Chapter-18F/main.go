@@ -1,3 +1,93 @@
+// database transaction
+// package main
+
+// import (
+// 	"database/sql"
+// 	"fmt"
+// 	"log"
+
+// 	_ "github.com/lib/pq"
+// )
+
+// // OrderItem mewakili item dalam pesanan
+
+// type OrderItem struct {
+// 	ProductID int
+// 	Quantity  int
+// 	Price     float64
+// }
+
+// func main() {
+
+// 	// Koneksi ke database PostgreSQL
+// 	connStr := "user=postgres dbname=postgres sslmode=disable password=postgres host=localhost"
+// 	db, err := sql.Open("postgres", connStr)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	defer db.Close()
+
+// 	// Membuat pesanan
+// 	userID := 1
+// 	orderItems := []OrderItem{
+// 		{ProductID: 1, Quantity: 2, Price: 50.00},
+// 		{ProductID: 2, Quantity: 1, Price: 30.00},
+// 	}
+
+// 	orderID, err := createOrder(db, userID, orderItems)
+// 	if err != nil {
+
+// 		log.Fatal(err)
+
+// 	}
+// 	fmt.Printf("Order created successfully with ID: %d\n", orderID)
+
+// }
+
+// func createOrder(db *sql.DB, userID int, items []OrderItem) (int, error) {
+// 	// Memulai transaksi
+// 	tx, err := db.Begin()
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	// Membuat entri baru dalam tabel orders
+// 	var orderID int
+// 	err = tx.QueryRow("INSERT INTO orders (user_id) VALUES ($1) RETURNING id", userID).Scan(&orderID)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		return 0, err
+// 	}
+
+// 	// Memproses setiap item dalam pesanan
+// 	for _, item := range items {
+// 		// Memperbarui stok produk
+// 		_, err := tx.Exec("UPDATE products SET stock = stock - $1 WHERE id = $2 AND stock >= $1", item.Quantity, item.ProductID)
+// 		if err != nil {
+// 			tx.Rollback()
+// 			return 0, err
+// 		}
+
+// 		// Menambahkan item ke tabel order_items
+// 		_, err = tx.Exec("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)", orderID, item.ProductID, item.Quantity, item.Price)
+// 		if err != nil {
+// 			tx.Rollback()
+// 			return 0, err
+// 		}
+
+// 	}
+
+// 	// Menyelesaikan transaksi
+// 	err = tx.Commit()
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	return orderID, nil
+// }
+
+// repository pattern
 package main
 
 import (

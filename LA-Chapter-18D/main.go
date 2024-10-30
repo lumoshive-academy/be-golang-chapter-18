@@ -74,12 +74,14 @@ func main() {
 
 	// Input pengguna yang aman dari SQL Injection
 	username := "admin"
-	password := "adminpassword"
+	password := "password' OR '1'='1"
 
-	// Query yang aman menggunakan parameterized query
+	// // Query yang aman menggunakan parameterized query
 	query := "SELECT id, username, password, email FROM customers WHERE username=$1 AND password=$2"
+	// query := "SELECT id, username, password, email FROM customers WHERE username='" + username + "' AND password='" + password + "'"
 	fmt.Println("Executing query:", query)
 
+	// row := db.QueryRow(query)
 	row := db.QueryRow(query, username, password)
 
 	var customer Customer
